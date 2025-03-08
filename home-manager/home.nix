@@ -18,7 +18,7 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
  # Packages that should be installed to the user profile.
-  home.packages = [
+  home.packages = with pkgs; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -35,27 +35,30 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
- 
-    pkgs.docker
-    pkgs.bat
-    pkgs.fastfetch
-    pkgs.gnumake
-    pkgs.k9s
-    pkgs.ktop
-    pkgs.nushell
-    pkgs.zoxide
-    pkgs.ripgrep
-    pkgs.sysz
-#    pkgs.vscode
-    pkgs.tree
-    pkgs.xclip
-    pkgs.lazydocker
-    pkgs.lazygit
-    pkgs.zellij
-    pkgs.atuin
-    pkgs.fzf
-    pkgs.htop
-    pkgs.fortune
+    minikube
+    kubernetes-helm
+    jq
+    docker
+    bat
+    fastfetch
+    gnumake
+    k9s
+    ktop
+    nushell
+    zoxide
+    ripgrep
+    kubectl
+    krew
+    sysz
+    tree
+    xclip
+    lazydocker
+    lazygit
+    zellij
+    atuin
+    fzf
+    htop
+    fortune
   ];
 
 
@@ -93,6 +96,7 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
+    PATH = "$HOME/.krew/bin:$PATH";
   };
 
   # Let Home Manager install and manage itself.
