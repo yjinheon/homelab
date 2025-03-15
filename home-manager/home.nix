@@ -59,6 +59,7 @@
     fzf
     htop
     fortune
+    nmap
   ];
 
 
