@@ -13,11 +13,10 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "24.11"; # Please read the comment before changing.
+  home.stateVersion = "25.05"; # Please read the comment before changing.
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
- # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
@@ -37,32 +36,38 @@
     # '')
     minikube
     kubernetes-helm
+    lsd
+    zoxide
+    docker 
     jq
-    docker
     bat
     fastfetch
     gnumake
     k9s
+    kdash
     ktop
     nushell
-    zoxide
     ripgrep
     kubectl
     krew
     sysz
     tree
     xclip
-    lazydocker
     lazygit
+    lazydocker
     zellij
     atuin
     fzf
     htop
-    fortune
     nmap
+    eza
+    yazi
+    nodejs
+    wl-clipboard
+    python313
+    uv
+    pipx
   ];
-
-
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -96,8 +101,7 @@
   #  /etc/profiles/per-user/datamind/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "nvim";
-    PATH = "$HOME/.krew/bin:$PATH";
+    # EDITOR = "emacs";
   };
 
   # Let Home Manager install and manage itself.
