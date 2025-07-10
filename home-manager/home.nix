@@ -78,7 +78,7 @@
     libffi
     openssl
     postgresql  # 데이터베이스 클라이언트
-
+    sqlite
   ];
 
   # 환경 변수를 사용자 세션에 영구적으로 설정
@@ -90,9 +90,6 @@
     # Python 가상환경이 시스템 라이브러리를 찾을 수 있도록
     PYTHONPATH = "";
   };
-
-
-
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

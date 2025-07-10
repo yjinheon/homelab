@@ -51,6 +51,8 @@
   services.ollama = {
   enable = true;
 #  acceleration = "cuda";
+   host = "0.0.0.0";
+   environmentVariables = {};
   };
   services.open-webui.enable = true;
 
@@ -94,11 +96,13 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.datamind = {
     isNormalUser = true;
     description = "datamind";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -106,8 +110,6 @@
 
   # Install firefox.
   programs.firefox.enable = true;
-
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -115,17 +117,28 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    fd
     wget
     kitty
     ghostty
     fzf
-    neovim
     rustup
     gcc
     vscode
     go
     xorg.xauth
     ollama
+    kubernetes-helm
+    docker
+    jdk
+    python312
+    python312Packages.pip
+    gcc
+    gcc-unwrapped
+    libgcc
+    gnumake
+    cmake
+    extra-cmake-modules
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -165,19 +178,50 @@
     2379 # k3s, etcd clients: required if using a "High Availability Embedded etcd" configuration
     2380 # k3s, etcd peers: required if using a "High Availability Embedded etcd" configuration
     3000 # hoader
+    11434 # ollama
+    8080 # airflow
+    18080 # test
+   # 5432 # postgres
+   # 8080 # minikube
+   # 8443 # minikube
   ];
 
 
   networking.firewall.allowedUDPPorts = [
-    # 8472 # k3s, flannel: required if using multi-node for inter-node networking
+     8472 # k3s, flannel: required if using multi-node for inter-node networking
   ];
   services.k3s.enable = true;
   services.k3s.role = "server";
   services.k3s.extraFlags = toString [
-    # "--debug" # Optionally add additional args to k3s
-     "--tls-san homeserver"
+     "--debug" # Optionally add additional args to k3s
   ];
 
+  # 
+  services.postgresql = {
+  enable = true;
+  package = pkgs.postgresql_16;
+  
+  # 기본 데이터베이스 생성
+  ensureDatabases = [ "mytestdb" ];
+  
+  enableTCPIP = true;
+  settings = {
+    port = 5432;
+  };
+  
+  # 개발 환경용 인증 설정 
+  authentication = pkgs.lib.mkOverride 10 ''
+    local all all trust
+    # 로컬호스트 연결은 md5
+    host all all 127.0.0.1/32 md5
+    host all all ::1/128 md5
+    # 모든 외부 연결
+    # host all all 0.0.0.0/0 md5
+  '';
+  
+  };
+
+ 
 
   # Open ports in the firewall.
   # networking.firewall.allowedUDPPorts = [ ... ];
@@ -190,7 +234,7 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 
   #How to disable suspend on close laptop lid on NixOS?
   services.logind.lidSwitch = "ignore";
