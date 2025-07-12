@@ -206,7 +206,7 @@
   
   enableTCPIP = true;
   settings = {
-    port = 5432;
+    port = 15432;
   };
   
   # 개발 환경용 인증 설정 
@@ -220,8 +220,6 @@
   '';
   
   };
-
- 
 
   # Open ports in the firewall.
   # networking.firewall.allowedUDPPorts = [ ... ];
