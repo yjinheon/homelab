@@ -39,6 +39,9 @@
     lsd
     zoxide
     docker 
+    #go
+    gopls
+    unzip
     jq
     bat
     fastfetch
@@ -73,13 +76,16 @@
     gcc-unwrapped.lib
     glibc
     stdenv.cc.cc.lib
-    # 추가 라이브러리들 (Airflow가 종종 필요로 함)
+    # extra libray 
     zlib
     libffi
     openssl
-    postgresql  # 데이터베이스 클라이언트
+    postgresql  
     sqlite
   ];
+
+
+
 
   # 환경 변수를 사용자 세션에 영구적으로 설정
   home.sessionVariables = {
@@ -123,9 +129,13 @@
   #  /etc/profiles/per-user/datamind/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    # EDITOR = "nvim";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+
 }
+
+
