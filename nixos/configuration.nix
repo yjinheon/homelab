@@ -12,6 +12,7 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -20,6 +21,35 @@
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
+  powerManagement = {
+    enable = false;
+    powertop.enable = false;
+  };
+
+
+  # For GNOME
+#  services.gnome.gnome-settings-daemon.enable = false;
+  
+  # Or configure power settings
+  #services.xserver.displayManager.sessionCommands = ''
+  #  ${pkgs.xset}/bin/xset s off
+  #  ${pkgs.xset}/bin/xset -dpms
+  #'';
+
+
+  # no sleep
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -45,6 +75,8 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes"];
   programs.ccache.enable=true;
+  # hyprland
+  programs.hyprland.enable=true;
 
 
   # Enable ollama
@@ -65,8 +97,8 @@
   virtualisation.docker.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  #services.xserver.displayManager.gdm.enable = true;
+#  services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -110,6 +142,7 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -139,6 +172,7 @@
     gnumake
     cmake
     extra-cmake-modules
+    google-chrome
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -194,9 +228,10 @@
   services.k3s.role = "server";
   services.k3s.extraFlags = toString [
      "--debug" # Optionally add additional args to k3s
+    "--tls-san 110.35.177.146"
   ];
 
-  # 
+  # /etc/nixos/configuration.nix 파일에 추가
   services.postgresql = {
   enable = true;
   package = pkgs.postgresql_16;
@@ -206,20 +241,31 @@
   
   enableTCPIP = true;
   settings = {
-    port = 15432;
+    port = 2077;
   };
   
   # 개발 환경용 인증 설정 
   authentication = pkgs.lib.mkOverride 10 ''
     local all all trust
-    # 로컬호스트 연결은 md5
+    # 로컬호스트 연결은 md5 암호화 사용
     host all all 127.0.0.1/32 md5
     host all all ::1/128 md5
     # 모든 외부 연결
     # host all all 0.0.0.0/0 md5
   '';
   
-  };
+  # 초기 설정 스크립트# (반영안됨)
+  initialScript = pkgs.writeText "backend-initScript" ''
+    ALTER USER postgres PASSWORD 'postgres';
+    -- 개발용 사용자 생성
+    CREATE ROLE nixcloud WITH LOGIN PASSWORD 'nixcloud' CREATEDB;
+    CREATE DATABASE nixcloud OWNER nixcloud;
+    -- 명시적 권한 부여
+    GRANT ALL PRIVILEGES ON DATABASE nixcloud TO nixcloud;
+  '';
+ };
+
+ 
 
   # Open ports in the firewall.
   # networking.firewall.allowedUDPPorts = [ ... ];
